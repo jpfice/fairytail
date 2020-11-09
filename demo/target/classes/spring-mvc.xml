@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+http://www.springframework.org/schema/tx
+http://www.springframework.org/schema/tx/spring-tx.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context-3.0.xsd
+http://www.springframework.org/schema/mvc
+http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd">
+
+    <!-- 搜索spring控件 -->
+    <context:component-scan base-package="sys"  />
+    <context:component-scan base-package="shiro"  />
+
+    <!-- 加载db.properties文件中的内容，db.properties文件中key命名要有一定的特殊规则 -->
+    <context:property-placeholder location="classpath:db.properties" />
+
+    <mvc:annotation-driven>
+	   <mvc:message-converters>
+	      <bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
+	      <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+	   </mvc:message-converters>
+    </mvc:annotation-driven>
+    <!--<mvc:resources location="resources/" mapping="resources/**" /> -->
+
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/views/"/>
+		<property name="suffix" value=".jsp"></property>
+    </bean>
+
+    <!-- 配置Druid数据源  -->
+    <bean id="cpdataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+      <!-- 基本属性 url、user、password -->
+      <property name="url" value="${jdbc.mysql.jdbcUrl}"></property>
+      <property name="driverClassName" value="${jdbc.mysql.driverClass}"></property>
+      <property name="username" value="${jdbc.mysql.user}"></property>
+      <property name="password" value="${jdbc.mysql.password}"></property>
+
+      <!-- 配置初始化大小、最小、最大 -->
+      <property name="initialSize" value="5" />
+      <property name="minIdle" value="5" />
+      <property name="maxActive" value="50" />
+
+      <!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+      <property name="poolPreparedStatements" value="false" />
+      <property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
+
+      <!-- 配置获取连接等待超时的时间 -->
+      <property name="maxWait" value="60000" />
+
+      <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+      <property name="timeBetweenEvictionRunsMillis" value="60000" />
+
+      <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+      <property name="minEvictableIdleTimeMillis" value="300000" />
+
+      <property name="testWhileIdle" value="true" />
+      <property name="testOnBorrow" value="true" />
+      <property name="testOnReturn" value="false" />
+
+    </bean>
+
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 数据库连接池 -->
+        <property name="dataSource" ref="cpdataSource" />
+        <!-- 加载mybatis的全局配置文件 -->
+        <property name="configLocation" value="classpath:mybatis-config.xml" />
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- 注入数据库连接池 -->
+        <property name="dataSource" ref="cpdataSource"/>
+    </bean>
+    <!-- 配置基于注解的声明式事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!-- SecurityManager -->
+    <bean id="securityManager" class="org.apache.shiro.mgt.DefaultSecurityManager"></bean>
+
+    <!-- 启用shrio授权注解拦截方式 -->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+         <property name="securityManager" ref="securityManager"/>
+    </bean>
+
+
+
+
+
+
+    <!-- 模板解析器  -->
+    <!-- thymeleaf
+    <bean id="templateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
+        <property name="prefix" value="/WEB-INF/views/" />
+        <property name="suffix" value=".html" />
+        <property name="templateMode" value="HTML5" />
+        <property name="cacheable" value="false" />
+        <property name="characterEncoding" value="UTF-8"/>
+    </bean>
+
+    <bean id="templateEngine" class="org.thymeleaf.spring5.SpringTemplateEngine">
+        <property name="templateResolver" ref="templateResolver" />
+    </bean>
+
+    <bean class="org.thymeleaf.spring5.view.ThymeleafViewResolver">
+        <property name="templateEngine" ref="templateEngine" />
+        <property name="characterEncoding"  value="UTF-8" />
+    </bean>
+     -->
+
+</beans>

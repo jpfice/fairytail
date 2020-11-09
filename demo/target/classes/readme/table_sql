@@ -1,0 +1,91 @@
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(20) NOT NULL COMMENT '用户id',
+  `username` varchar(50) NOT NULL COMMENT '用户名',
+  `password` varchar(50) NOT NULL,
+  `salt` varchar(128) DEFAULT NULL COMMENT '加密盐值',
+  `email` varchar(50) DEFAULT NULL COMMENT '邮箱',
+  `phone` varchar(50) DEFAULT NULL COMMENT '联系方式',
+  `sex` int(255) DEFAULT NULL COMMENT '年龄：1男2女',
+  `age` int(3) DEFAULT NULL COMMENT '年龄',
+  `status` int(1) NOT NULL COMMENT '用户状态：1有效; 2删除',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `last_login_time` datetime DEFAULT NULL COMMENT '最后登录时间',
+  PRIMARY KEY (`id`,`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
+
+
+INSERT INTO user ( user_id, username,password,salt,email,phone,sex,age,status,create_time,update_time,last_login_time) VALUES ("1000001", "admin","123456","123","12345@qq.com","13145004601",1,20,1,null,null,null);
+INSERT INTO user ( user_id, username,password,salt,email,phone,sex,age,status,create_time,update_time,last_login_time) VALUES ("1000002", "Tom","123456","123","12345@qq.com","13145004602",1,25,1,null,null,null);
+INSERT INTO user ( user_id, username,password,salt,email,phone,sex,age,status,create_time,update_time,last_login_time) VALUES ("1000003", "Jok","123456","123","12345@qq.com","13145004603",1,30,1,null,null,null);
+INSERT INTO user ( user_id, username,password,salt,email,phone,sex,age,status,create_time,update_time,last_login_time) VALUES ("1000004", "Bob","123456","123","12345@qq.com","13145004604",1,30,1,null,null,null);
+INSERT INTO user ( user_id, username,password,salt,email,phone,sex,age,status,create_time,update_time,last_login_time) VALUES ("1000005", "AnNa","123456","123","12345@qq.com","13145004605",2,25,1,null,null,null);
+
+
+CREATE TABLE `role` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `role_id` varchar(20) NOT NULL COMMENT '角色id',
+  `name` varchar(50) NOT NULL COMMENT '角色名称',
+  `description` varchar(255) DEFAULT NULL COMMENT '角色描述',
+  `status` int(1) NOT NULL COMMENT '状态：1有效；2删除',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
+INSERT INTO role (role_id,name,description,status,create_time,update_time) VALUES ("R0001", "supperadmin","supper administrator","1",null,null);
+INSERT INTO role (role_id,name,description,status,create_time,update_time) VALUES ("R0002", "admin","administrator","1",null,null);
+INSERT INTO role (role_id,name,description,status,create_time,update_time) VALUES ("R0003", "manager","project manager","1",null,null);
+INSERT INTO role (role_id,name,description,status,create_time,update_time) VALUES ("R0004", "leader","project leader","1",null,null);
+INSERT INTO role (role_id,name,description,status,create_time,update_time) VALUES ("R0005", "member","project member","1",null,null);
+
+
+CREATE TABLE `permission` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `permission_id` varchar(20) NOT NULL COMMENT '权限id',
+  `name` varchar(100) NOT NULL COMMENT '权限名称',
+  `description` varchar(255) DEFAULT NULL COMMENT '权限描述',
+  `url` varchar(255) DEFAULT NULL COMMENT '权限访问路径',
+  `perms` varchar(255) DEFAULT NULL COMMENT '权限标识',
+  `parent_id` int(11) DEFAULT NULL COMMENT '父级权限id',
+  `type` int(1) DEFAULT NULL COMMENT '类型   0：目录   1：菜单   2：按钮',
+  `order_num` int(3) DEFAULT '0' COMMENT '排序',
+  `icon` varchar(50) DEFAULT NULL COMMENT '图标',
+  `status` int(1) NOT NULL COMMENT '状态：1有效；2删除',
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
+
+INSERT INTO permission ( permission_id, name,description,url,perms,parent_id,type,order_num,icon,status,create_time,update_time) VALUES ("P0001", "CreateUser","Create User","https://aaaaaa","Create",null,0,0,null,1,null,null);
+INSERT INTO permission ( permission_id, name,description,url,perms,parent_id,type,order_num,icon,status,create_time,update_time) VALUES ("P0002", "DeleteUser","Delete User","https://aaaaaa","Delete",null,0,0,null,1,null,null);
+INSERT INTO permission ( permission_id, name,description,url,perms,parent_id,type,order_num,icon,status,create_time,update_time) VALUES ("P0003", "UpdateUser","Update User","https://aaaaaa","Update",null,0,0,null,1,null,null);
+INSERT INTO permission ( permission_id, name,description,url,perms,parent_id,type,order_num,icon,status,create_time,update_time) VALUES ("P0004", "SelectUser","Select User","https://aaaaaa","Select",null,0,0,null,1,null,null);
+
+
+CREATE TABLE `user_role` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(20) NOT NULL COMMENT '用户id',
+  `role_id` varchar(20) NOT NULL COMMENT '角色id',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+INSERT INTO user_role (user_id,role_id) VALUES ("U000001", "R0001");
+INSERT INTO user_role (user_id,role_id) VALUES ("U000002", "R0002");
+INSERT INTO user_role (user_id,role_id) VALUES ("U000003", "R0003");
+INSERT INTO user_role (user_id,role_id) VALUES ("U000004", "R0004");
+INSERT INTO user_role (user_id,role_id) VALUES ("U000005", "R0005");
+
+CREATE TABLE `role_permission` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `role_id` varchar(20) NOT NULL COMMENT '角色id',
+  `permission_id` varchar(20) NOT NULL COMMENT '权限id',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=869 DEFAULT CHARSET=utf8;
+
+INSERT INTO role_permission (role_id,permission_id) VALUES ("R0001", "P0001");
+INSERT INTO role_permission (role_id,permission_id) VALUES ("R0001", "P0002");
+INSERT INTO role_permission (role_id,permission_id) VALUES ("R0001", "P0003");
+INSERT INTO role_permission (role_id,permission_id) VALUES ("R0001", "P0004");
+INSERT INTO role_permission (role_id,permission_id) VALUES ("R0005", "P0004");
